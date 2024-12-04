@@ -59,10 +59,8 @@ void setup()
    Serial.print("Touch reference Level:  "); Serial.print( TouchNormalTreshold[0]);  Serial.print(" / "); Serial.print(TouchNormalTreshold[1]); Serial.print(" / ");
    Serial.print( TouchNormalTreshold[2]);  Serial.print(" / "); Serial.println(TouchNormalTreshold[3]);
 
-
-// zmiana na branchu webowa 
-    Serial.print( TouchNormalTreshold[2]);  Serial.print(" / "); Serial.println(TouchNormalTreshold[3]);
-
+   /// zmiana w webowej
+   Serial.print( TouchNormalTreshold[2]);  Serial.print(" / "); Serial.println(TouchNormalTreshold[3]);
 
 
 
