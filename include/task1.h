@@ -27,7 +27,7 @@ void task1(void *parameters)
 
    // Inicjalizacja ADXL345
   Serial.println("Inicjalizacja ADXL345");
-  if(!accel->begin())
+  if(!accel->begin(0x1D)) //0x1D dla ADXL wbudowanego na płytę  a dla begin() - axelerometr na zewnętrznej płytce
   {
     /* There was a problem detecting the ADXL345 ... check your connections */
     Serial.println("Ooops, no ADXL345 detected ... Check your wiring!");

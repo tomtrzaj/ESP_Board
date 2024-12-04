@@ -2,9 +2,12 @@
 #define ServisSerialEvent_h
 
 
+//#include <main.h>
 
 #include <Arduino.h>
 #include <struktury_def.h>
+#include <definicje.h>
+
 
 
 #define SERIAL_BUF_MAX_LENGTH 30 // max rozmiar bufora odbiornika serwisowego
@@ -17,6 +20,9 @@ TEMP_DS1820 *Temp_DS_ptr1 =&Temp_DS1820;
 ALARM *Alarm_ptr1 = &Alarm;
 MSG_LUX *BH1750_ptr1 =&LuxBH1750; 
 
+
+
+
 void EkranStartowyInterfejsSerwisowy();
 void SerwisMonitor(void);
 
@@ -26,6 +32,9 @@ void SerwisMonitor(void);
 //-------------------------------------------------------------------
 void ServisSerialEvent()
 {
+  
+
+
   while (Serial.available())
   {
     
@@ -54,7 +63,23 @@ void ServisSerialEvent()
         serial_buf[serial_buf_length] = '\0';
         switch (serial_buf[0])
         {
-        case 'a':  Serial.print("K3 first a ");       break;
+        case 'p':  if(serial_buf[1]=='k') // przekaźniki 'pk1' 'pk2' 'pk3' 'pk4'
+                    {
+                      switch (serial_buf[2])
+                      {
+                       case '1': if(KomponentSTATE.pk[0]) {KomponentSTATE.pk[0]=false;  Serial.println("PK1 - OFF");}
+                                 else                     {KomponentSTATE.pk[0]=true;  Serial.println("PK1 - ON");} break;
+                       case '2': if(KomponentSTATE.pk[1]) {KomponentSTATE.pk[1]=false;  Serial.println("PK2 - OFF");}
+                                 else                     {KomponentSTATE.pk[1]=true;  Serial.println("PK2 - ON");} break;
+                       case '3': if(KomponentSTATE.pk[2]) {KomponentSTATE.pk[2]=false; Serial.println("PK3 - OFF");}
+                                 else                     {KomponentSTATE.pk[2]=true; Serial.println("PK3 - ON");} break;
+                       case '4': if(KomponentSTATE.pk[3]) {KomponentSTATE.pk[3]=false;  Serial.println("PK4 - OFF");}
+                                 else                     {KomponentSTATE.pk[3]=true;  Serial.println("PK4 - ON");} break;
+                       default: Serial.print("nieznana komenda!!!");break;
+                      } 
+
+                    }
+        
         case 'b':  Serial.print("K3 first b ");    break;
         case 'c':  Serial.print("K3 first c ");        break;
         case 'd':  Serial.print("K3 first d ");        break;
@@ -75,6 +100,20 @@ void ServisSerialEvent()
         case 'b': Serial.print("K2 first b");        break;
         case 'c': Serial.print("K2 first c ");       break;
         case 'd': Serial.print("K2 first d ");       break;
+        case 'l': 
+                  switch (serial_buf[1])
+                      {
+                       case '1': if(KomponentSTATE.PrzyciskiLED[0]) {KomponentSTATE.PrzyciskiLED[0]=false; Serial.println("Przycisk 1 LED -OFF");}
+                                 else                               {KomponentSTATE.PrzyciskiLED[0]=true;  Serial.println("Przycisk 1 LED -ON");}   break;
+                       case '2': if(KomponentSTATE.PrzyciskiLED[1]) {KomponentSTATE.PrzyciskiLED[1]=false; Serial.println("Przycisk 2 LED -OFF");}
+                                 else                               {KomponentSTATE.PrzyciskiLED[1]=true;  Serial.println("Przycisk 2 LED -ON");}   break;          
+                       case '3': if(KomponentSTATE.PrzyciskiLED[2]) {KomponentSTATE.PrzyciskiLED[2]=false; Serial.println("Przycisk 1 LED -OFF");}
+                                 else                               {KomponentSTATE.PrzyciskiLED[2]=true;  Serial.println("Przycisk 3 LED -ON");}   break;
+                       case '4': if(KomponentSTATE.PrzyciskiLED[3]) {KomponentSTATE.PrzyciskiLED[3]=false; Serial.println("Przycisk 4 LED -OFF");}
+                                 else                               {KomponentSTATE.PrzyciskiLED[3]=true;  Serial.println("Przycisk 4 LED -ON");}   break;          
+                       default: Serial.print("nieznana komenda!!!");break;
+                      }      
+          break;
         default:
           break;
         }
@@ -92,9 +131,11 @@ void ServisSerialEvent()
         case 'A':
           break;
         case 'a':  Serial.print("K1 a ");    break;
-        case 'b':  Serial.print("K2 b ");     break;
+        case 'b':  Serial.print("K2 b ");    break;
         case 'c':  Serial.print("K3 c ");    break;
         case 'd':  Serial.print("K3 d ");    break;
+        case 'k':  if(KomponentSTATE.komp_zas) {KomponentSTATE.komp_zas=false; Serial.println("KOMP - OFF");}  
+                   else{KomponentSTATE.komp_zas=true;  Serial.println("KOMP - ON");}      break;
         
         case 's':  break;
         case 'm':  break;
@@ -160,12 +201,18 @@ void SerwisMonitor(void)
   char Text[200];
  
 
-  snprintf(Text,sizeof(Text),"Temp:%.1f H:%.0i DS1820:[%.1f/%.1f/%.1f/%.1f/] LUX: [%.0f/%.0f] ALARM: %i ",
+  snprintf(Text,sizeof(Text),"[T:%.1f H:%.0i] DS1820:[%.1f/%.1f/%.1f/%.1f] LUX:[%.0f/%.0f] AL:[%i] DRZWI:[%i/%i] BUTTON:[%i/%i/%i/%i]",
             TempDHT_ptr1->temp,                 // DHT1 temeratura 1
             TempDHT_ptr1->hum,                  // DHT1 wilgotność
             Temp_DS_ptr1->temp[0],Temp_DS_ptr1->temp[1],Temp_DS_ptr1->temp[2],Temp_DS_ptr1->temp[3],
             BH1750_ptr1->lux[0],BH1750_ptr1->lux[1],
-            Alarm_ptr1->Alarm
+            Alarm_ptr1->Alarm,
+            (int)KomponentSTATE.drzwi[0],
+            (int)KomponentSTATE.drzwi[1],
+            (int)KomponentSTATE.przyciski[0],
+            (int)KomponentSTATE.przyciski[1],
+            (int)KomponentSTATE.przyciski[2],
+            (int)KomponentSTATE.przyciski[3]
             );
 
   Serial.println(Text);

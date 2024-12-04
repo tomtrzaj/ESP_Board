@@ -14,7 +14,7 @@
 #define TOUCH4_pin 15
 
 #define PWN_FAN1_pin 7
-#define PWN_FAN2_pin 8
+#define PWN_FAN2_pin 2
 #define PWN_5V_pin 6
 
 #define TACHO1_pin 34
@@ -31,7 +31,7 @@
 #define LED1_pin 14
 #define LED2_pin 27
 #define LED3_pin 26
-#define LED14pin 25
+#define LED4_pin 25
 
 
 #endif

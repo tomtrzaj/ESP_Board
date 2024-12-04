@@ -38,7 +38,17 @@ struct ALARM
   bool  Alarm;          // czy wystapił alarm
 }Alarm;
 //------------------------------------------------------
-
-
+// ----- STANY POSZCZEGÓLNYCH KOMPONENTÓW W URZADZENIU  --------
+//------------------------------------------------------
+struct STANY_KOMPONENTOW
+{
+  bool komp_zas;      // czy załaczony komp
+  bool pk[4];          // stan przekaźników
+  bool drzwi[2];        //  stan drzwi 
+  bool przyciski[4];
+  bool PrzyciskiLED[4];
+  byte zm3;                  // 
+}KomponentSTATE;
+//----------------------------------------------------------
 
 #endif

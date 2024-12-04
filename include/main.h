@@ -35,6 +35,8 @@ MSG_LUX *BH1750_ptr =&LuxBH1750;
 
 
 bool LED_STATE = false;
+//bool  KOMP_STATE =false;
+int TouchNormalTreshold[4];  // zapamietany poziom czczułosci przycisków
 
 Timers <20> akcja;// max 20 wątków
 
