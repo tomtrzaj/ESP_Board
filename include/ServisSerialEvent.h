@@ -20,7 +20,7 @@ TEMP_DS1820 *Temp_DS_ptr1 =&Temp_DS1820;
 ALARM *Alarm_ptr1 = &Alarm;
 MSG_LUX *BH1750_ptr1 =&LuxBH1750; 
 
-
+// zmiana na webowa
 
 
 void EkranStartowyInterfejsSerwisowy();

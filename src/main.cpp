@@ -60,6 +60,10 @@ void setup()
    Serial.print( TouchNormalTreshold[2]);  Serial.print(" / "); Serial.println(TouchNormalTreshold[3]);
 
 
+// zmiana na branchu webowa 
+    Serial.print( TouchNormalTreshold[2]);  Serial.print(" / "); Serial.println(TouchNormalTreshold[3]);
+
+
 
 
 
