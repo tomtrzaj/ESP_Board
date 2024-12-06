@@ -32,8 +32,9 @@ TEMP_DS1820 *Temp_DS_ptr =&Temp_DS1820;
 ALARM *Alarm_ptr = &Alarm;
 MSG_LUX *BH1750_ptr =&LuxBH1750; 
 
+hw_timer_t *My_timer1 = NULL;
 
-
+int licznikTacho1,licznikTacho2;
 bool LED_STATE = false;
 //bool  KOMP_STATE =false;
 int TouchNormalTreshold[4];  // zapamietany poziom czczułosci przycisków

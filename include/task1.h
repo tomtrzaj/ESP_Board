@@ -26,7 +26,7 @@ void task1(void *parameters)
    uint8_t regr;
 
    // Inicjalizacja ADXL345
-  Serial.println("Inicjalizacja ADXL345");
+  Serial.println("Inicjalizacja ADXL345:  ");
   if(!accel->begin(0x1D)) //0x1D dla ADXL wbudowanego na płytę  a dla begin() - axelerometr na zewnętrznej płytce
   {
     /* There was a problem detecting the ADXL345 ... check your connections */
@@ -41,7 +41,7 @@ void task1(void *parameters)
   displaySensorDetails();
   /* Display additional settings (outside the scope of sensor_t) */
   displayDataRate();
-  displayRange();
+  //displayRange();
   Serial.println("");
 
     accel->writeRegister(0x1D,180);  // Threshold Tap   Czułość         1- 62,5mg/LSB   255   - 16gram

@@ -2,7 +2,14 @@
 #define struktury_def_h
 
 #include <Arduino.h>
+
+
+byte PWN_Fan1=0;
+byte PWN_Fan2=0;
+bool PodgladSerwisowy;
+
 /// @brief definicje structur uzytych w oprogramowaniu
+
 struct TEMP_DHT
 {
   byte  connect;      // czy jest podlączony
@@ -42,11 +49,12 @@ struct ALARM
 //------------------------------------------------------
 struct STANY_KOMPONENTOW
 {
-  bool komp_zas;      // czy załaczony komp
+  bool fan_zas;      // czy załaczony wentylator
   bool pk[4];          // stan przekaźników
   bool drzwi[2];        //  stan drzwi 
   bool przyciski[4];
   bool PrzyciskiLED[4];
+  int  Tacho[2];      // obroty Tahometrów w wentylatorach 
   byte zm3;                  // 
 }KomponentSTATE;
 //----------------------------------------------------------

@@ -12,7 +12,19 @@ TaskHandle_t Task4;
 
 
 //---------------------------------------------------
-
+//Przerwanie od TAHO wentylatorów
+void IRAM_ATTR zliczTacho1() { licznikTacho1++; }
+void IRAM_ATTR zliczTacho2() { licznikTacho2++; }
+//-------------------------------------------------
+// zlicza co 1s obroty wentylatorów TACHO
+void IRAM_ATTR onTimer1()
+{
+  KomponentSTATE.Tacho[0]=licznikTacho1*30;  // Tacho dają po dwa impulsy na [s] czyli /2  mnożymy *60  co w sumie daje *30  
+  licznikTacho1=0;
+  KomponentSTATE.Tacho[1]=licznikTacho2*30;  // Tacho dają po dwa impulsy na [s] czyli /2  mnożymy *60  co w sumie daje *30  
+  licznikTacho2=0;
+}
+//------------------------------------------
 
 
 void setup() 
@@ -22,7 +34,7 @@ void setup()
    Serial.println("Hello ESPDev Board v1.0");
 
   //msg_queue = xQueueCreate(msg_queue_len, sizeof(int)); // stworzyliśmy kolejkę
- 
+
   
 
 
@@ -30,8 +42,8 @@ void setup()
   //xTaskCreate(task1,"TASK 1", 2000,NULL,1,&Task1); // on core 0
   xTaskCreatePinnedToCore(task1,"TASK1",2000,NULL,1,&Task1,0); //Task on Core 0      accelerometr ADXL
   xTaskCreatePinnedToCore(task2,"TASK2",10000,NULL,4,&Task2,0); //Task on Core 0      DHT22
-  xTaskCreatePinnedToCore(task3,"TASK3",10000,NULL,2,&Task3,0); //Task on Core 0   - czujniki temperatur DS1820
-  xTaskCreatePinnedToCore(task4,"TASK4",10000,NULL,2,&Task4,0); //Task on Core 0  // BH1750
+  xTaskCreatePinnedToCore(task3,"TASK3",10000,NULL,3,&Task3,0); //Task on Core 0   - czujniki temperatur DS1820
+  xTaskCreatePinnedToCore(task4,"TASK4",10000,NULL,1,&Task4,0); //Task on Core 0  // BH1750
   //xTaskCreate(task4,"TASK 4", 2000,NULL,3,NULL);                                       // 
   
 
@@ -40,12 +52,17 @@ void setup()
   akcja.attach(2,0,zadanie2);          
   akcja.attach(3,0,zadanie3);         
  //----------------
-  pinMode(TOUCH4_pin, INPUT_PULLUP); pinMode(TOUCH3_pin, INPUT_PULLUP); pinMode(TOUCH2_pin, INPUT_PULLUP); pinMode(TOUCH1_pin, INPUT_PULLUP);
+  //pinMode(TOUCH4_pin, INPUT_PULLUP); pinMode(TOUCH3_pin, INPUT_PULLUP); pinMode(TOUCH2_pin, INPUT_PULLUP); pinMode(TOUCH1_pin, INPUT_PULLUP);
   
   pinMode(LED1_pin, OUTPUT); pinMode(LED2_pin, OUTPUT); pinMode(LED3_pin, OUTPUT); pinMode(LED4_pin, OUTPUT);
   pinMode(KOMP_pin, OUTPUT);
   pinMode(PK1_pin, OUTPUT); pinMode(PK2_pin, OUTPUT);pinMode(PK3_pin, OUTPUT);pinMode(PK4_pin, OUTPUT);
   pinMode(DOOR1_pin, INPUT_PULLUP); pinMode(DOOR2_pin, INPUT_PULLUP); 
+  pinMode(PWN_FAN1_pin, OUTPUT);  pinMode(PWN_FAN2_pin, OUTPUT);
+  digitalWrite(PWN_FAN1_pin,HIGH);  digitalWrite(PWN_FAN2_pin,HIGH);
+  pinMode(TACHO1_pin, INPUT_PULLUP); pinMode(TACHO2_pin, INPUT_PULLUP);
+  //analogWriteFrequency(25000);
+  analogWrite(PWN_FAN1_pin,255);  analogWrite(PWN_FAN2_pin,255);
  
  // Initialize SPIFFS
   if(!SPIFFS.begin()){
@@ -53,12 +70,18 @@ void setup()
     return;
   }
   
-  webConnect();
+  //webConnect();
   delay(1000);
-  TouchNormalTreshold[0]=touchRead(TOUCH1_pin); TouchNormalTreshold[1]=touchRead(TOUCH2_pin);TouchNormalTreshold[2]=touchRead(TOUCH3_pin);TouchNormalTreshold[3]=touchRead(TOUCH4_pin);
-   Serial.print("Touch reference Level:  "); Serial.print( TouchNormalTreshold[0]);  Serial.print(" / "); Serial.print(TouchNormalTreshold[1]); Serial.print(" / ");
-   Serial.print( TouchNormalTreshold[2]);  Serial.print(" / "); Serial.println(TouchNormalTreshold[3]);
-
+  //TouchNormalTreshold[0]=touchRead(TOUCH1_pin); TouchNormalTreshold[1]=touchRead(TOUCH2_pin);TouchNormalTreshold[2]=touchRead(TOUCH3_pin);TouchNormalTreshold[3]=touchRead(TOUCH4_pin);
+  // Serial.print("Touch reference Level:  "); Serial.print( TouchNormalTreshold[0]);  Serial.print(" / "); Serial.print(TouchNormalTreshold[1]); Serial.print(" / ");
+  // Serial.print( TouchNormalTreshold[2]);  Serial.print(" / "); Serial.println(TouchNormalTreshold[3]);
+  
+  // do TACHO uruchamiamy precyzyjny TIMER
+    My_timer1 = timerBegin(0, 80, true); // co sekunde
+    timerAttachInterrupt(My_timer1, &onTimer1, true);
+    timerAlarmWrite(My_timer1, 1000000, true);
+    attachInterrupt(TACHO1_pin, zliczTacho1, FALLING); attachInterrupt(TACHO2_pin, zliczTacho2, FALLING);  // zliczanie impulsów od tacho
+    timerAlarmEnable(My_timer1); // timer do zliczania impulsów w ciągu minuty
 
 
 
@@ -88,10 +111,12 @@ void loop()
 // odświerzamy stany na WY i   WE 
 void zadanie0()
   { 
-    if(touchRead(TOUCH1_pin)<(TouchNormalTreshold[0]-8)) KomponentSTATE.PrzyciskiLED[0]=true; else KomponentSTATE.PrzyciskiLED[0]=false;
-    if(touchRead(TOUCH2_pin)<(TouchNormalTreshold[1]-8)) KomponentSTATE.PrzyciskiLED[1]=true; else KomponentSTATE.PrzyciskiLED[1]=false;
-    if(touchRead(TOUCH3_pin)<(TouchNormalTreshold[2]-8)) KomponentSTATE.PrzyciskiLED[2]=true; else KomponentSTATE.PrzyciskiLED[2]=false;
-    if(touchRead(TOUCH4_pin)<(TouchNormalTreshold[3]-8)) KomponentSTATE.PrzyciskiLED[3]=true; else KomponentSTATE.PrzyciskiLED[3]=false;
+    // przyciski są nieużywane w wersji dla tablicy LED
+    
+    //if(touchRead(TOUCH1_pin)<(TouchNormalTreshold[0]-8)) KomponentSTATE.PrzyciskiLED[0]=true; else KomponentSTATE.PrzyciskiLED[0]=false;
+    //if(touchRead(TOUCH2_pin)<(TouchNormalTreshold[1]-8)) KomponentSTATE.PrzyciskiLED[1]=true; else KomponentSTATE.PrzyciskiLED[1]=false;
+    //if(touchRead(TOUCH3_pin)<(TouchNormalTreshold[2]-8)) KomponentSTATE.PrzyciskiLED[2]=true; else KomponentSTATE.PrzyciskiLED[2]=false;
+    //if(touchRead(TOUCH4_pin)<(TouchNormalTreshold[3]-8)) KomponentSTATE.PrzyciskiLED[3]=true; else KomponentSTATE.PrzyciskiLED[3]=false;
     
 
     if(KomponentSTATE.pk[0]) {digitalWrite(PK1_pin,HIGH);} else {digitalWrite(PK1_pin,LOW);} // WY Przekaźnika 1
@@ -102,10 +127,12 @@ void zadanie0()
     if(digitalRead(DOOR1_pin)) KomponentSTATE.drzwi[0]=false; else KomponentSTATE.drzwi[0]=true;
     if(digitalRead(DOOR2_pin)) KomponentSTATE.drzwi[1]=false; else KomponentSTATE.drzwi[1]=true;
 
-    if(digitalRead(TOUCH1_pin)) {KomponentSTATE.przyciski[0]=false;} else {KomponentSTATE.przyciski[0]=true;}
-    if(digitalRead(TOUCH2_pin)) {KomponentSTATE.przyciski[1]=false;} else {KomponentSTATE.przyciski[1]=true;}
-    if(digitalRead(TOUCH3_pin)) {KomponentSTATE.przyciski[2]=false;} else {KomponentSTATE.przyciski[2]=true;}
-    if(digitalRead(TOUCH4_pin)) {KomponentSTATE.przyciski[3]=false;} else {KomponentSTATE.przyciski[3]=true;}
+    if(KomponentSTATE.fan_zas) {digitalWrite(KOMP_pin,HIGH);} else {digitalWrite(KOMP_pin,LOW);}  // załączenie zasilania pod wentylatory
+
+    //if(digitalRead(TOUCH1_pin)) {KomponentSTATE.przyciski[0]=false;} else {KomponentSTATE.przyciski[0]=true;}
+    //if(digitalRead(TOUCH2_pin)) {KomponentSTATE.przyciski[1]=false;} else {KomponentSTATE.przyciski[1]=true;}
+    //if(digitalRead(TOUCH3_pin)) {KomponentSTATE.przyciski[2]=false;} else {KomponentSTATE.przyciski[2]=true;}
+    //if(digitalRead(TOUCH4_pin)) {KomponentSTATE.przyciski[3]=false;} else {KomponentSTATE.przyciski[3]=true;}
 
     if(KomponentSTATE.PrzyciskiLED[0]) {digitalWrite(LED1_pin,HIGH);} else {digitalWrite(LED1_pin,LOW);} // WY podświetlenie przycisków
     if(KomponentSTATE.PrzyciskiLED[1]) {digitalWrite(LED2_pin,HIGH);} else {digitalWrite(LED2_pin,LOW);}
@@ -130,7 +157,8 @@ void zadanie1()
 //-----  
 void zadanie2()
   { 
-    
+
+  
 
   }   
  //-----  

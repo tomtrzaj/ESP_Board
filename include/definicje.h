@@ -13,8 +13,8 @@
 #define TOUCH3_pin 2
 #define TOUCH4_pin 15
 
-#define PWN_FAN1_pin 7
-#define PWN_FAN2_pin 2
+#define PWN_FAN1_pin 2
+#define PWN_FAN2_pin 4
 #define PWN_5V_pin 6
 
 #define TACHO1_pin 34
