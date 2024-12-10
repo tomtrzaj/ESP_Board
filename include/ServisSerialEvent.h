@@ -35,8 +35,6 @@ void SerwisMonitor(void);
 void ServisSerialEvent()
 {
   
-
-
   while (Serial.available())
   {
     
@@ -49,12 +47,33 @@ void ServisSerialEvent()
         serial_buf[serial_buf_length] = '\0';
         switch (serial_buf[0])
         {
-        case 'a': Serial.print("K4 first a");        break;
-        case 'b': Serial.print("K4 first b");        break;
-        case 'c': Serial.print("K4 first c");        break;
-        case 'd': Serial.print("K4 first d ");       break;
-        default:
-          break;
+        case 'L': 
+           switch (serial_buf[1])
+           {
+            case '1': if(serial_buf[2]=='#') {if(serial_buf[3]=='1') KomponentSTATE.pk[1]=true;  if(serial_buf[3]=='0') KomponentSTATE.pk[1]=false; } break; //L1#1, L1#0  ENTER    załącz lub wyłącz zasilanie panelu LED1
+            case '2': if(serial_buf[2]=='#') {if(serial_buf[3]=='1') KomponentSTATE.pk[2]=true;  if(serial_buf[3]=='0') KomponentSTATE.pk[2]=false; } break; //L2#1, L2#0   ENTER  załącz lub wyłącz zasilanie panelu LED1break;
+            default : break;
+           } break;
+        case 'F': 
+           switch (serial_buf[1])
+           {
+            case 'a': if(serial_buf[2]=='#') {if(serial_buf[3]=='1') {KomponentSTATE.fan_zas=true; Serial.println("WENTYLATORY - ON");}  
+                                              if(serial_buf[3]=='0') {KomponentSTATE.fan_zas=false;Serial.println("WENTYLATORY - OFF");} } break; //Fa#1, Fa#0  ENTER    załącz lub wyłącz zasilanie wentylatorów
+            case '2': break;
+            default : break;
+           } break;
+      
+        case '$': 
+            switch (serial_buf[1])
+            {
+            case 's': if(serial_buf[2]=='#') {if(serial_buf[3]=='1') {PodgladSerwisowy=true;Serial.println("Serwis Monitorowy - ON");}
+                                              if(serial_buf[3]=='0') {PodgladSerwisowy=false;Serial.println("Serwis Monitorowy - OFF");}} break; 
+            case '2': break;
+            default : break;
+            } break;  
+        break;
+        case 'd':   break;
+        default:    break;
         }
         serial_buf_length = 0;
         return;
@@ -63,6 +82,9 @@ void ServisSerialEvent()
       if (serial_buf_length == 3)
       {
         serial_buf[serial_buf_length] = '\0';
+
+        if(!PodgladSerwisowy) {serial_buf_length = 0;break;}  // nieanalizuj 1-bajtowych komend w trybie nie serwisowym  kiedy wysyłamy JSONy
+        
         switch (serial_buf[0])
         {
         case 'p':  if(serial_buf[1]=='k') // przekaźniki 'pk1' 'pk2' 'pk3' 'pk4'
@@ -79,12 +101,12 @@ void ServisSerialEvent()
                                  else                     {KomponentSTATE.pk[3]=true;  Serial.println("PK4 - ON");} break;
                        default: Serial.print("nieznana komenda!!!");break;
                       } 
-
-                    }
+   
+                    } break;
         
-        case 'b':  Serial.print("K3 first b ");    break;
-        case 'c':  Serial.print("K3 first c ");        break;
-        case 'd':  Serial.print("K3 first d ");        break;
+        case 'b':  break;
+        case 'c':     break;
+        case 'd':      break;
         default:
           break;
         }
@@ -96,12 +118,15 @@ void ServisSerialEvent()
       if (serial_buf_length == 2)
       {
         serial_buf[serial_buf_length] = '\0';
+
+        if(!PodgladSerwisowy) {serial_buf_length = 0;break;}  // nieanalizuj 1-bajtowych komend w trybie nie serwisowym  kiedy wysyłamy JSONy
+
         switch (serial_buf[0])
         {
-        case 'a': Serial.print("K2 first a");        break;
-        case 'b': Serial.print("K2 first b");        break;
-        case 'c': Serial.print("K2 first c ");       break;
-        case 'd': Serial.print("K2 first d ");       break;
+        case 'a':    break;
+        case 'b':     break;
+        case 'c':     break;
+        case 'd':    break;
         case 'l': 
                   switch (serial_buf[1])
                       {
@@ -127,16 +152,19 @@ void ServisSerialEvent()
       if (serial_buf_length > 0)
       {
         serial_buf[serial_buf_length] = '\0';
+        
+        if(!PodgladSerwisowy) {serial_buf_length = 0;break;}  // nieanalizuj 1-bajtowych komend w trybie nie serwisowym  kiedy wysyłamy JSONy
         //--przetwarzanie otrzymanej komendy 1 bajtowej
         switch (serial_buf[0])
         {
         case 'A':
           break;
-        case 'a':  Serial.print("K1 a ");    break;
-        case 'b':  Serial.print("K2 b ");    break;
-        case 'c':  Serial.print("K3 c ");    break;
-        case 'd':  Serial.print("K3 d ");    break;
-        case 'f':  if(KomponentSTATE.fan_zas) {KomponentSTATE.fan_zas=false; Serial.println("WENTYLATORY - OFF");}  
+        case 'a':   break;
+        case 'b':    break;
+        case 'c':    break;
+        case 'd':    break;
+        case 'f':  
+                   if(KomponentSTATE.fan_zas) {KomponentSTATE.fan_zas=false; Serial.println("WENTYLATORY - OFF");}  
                    else{KomponentSTATE.fan_zas=true;  Serial.println("WENTYLATORY - ON");}      break;
         
         case 's':  if(PodgladSerwisowy) {PodgladSerwisowy=false;Serial.println("Serwis Monitorowy - OFF");} else {PodgladSerwisowy=true;Serial.println("Serwis Monitorowy - ON");} break;
@@ -204,14 +232,18 @@ void SerwisMonitor(void)
   {
    char Text[200];
  
-   snprintf(Text,sizeof(Text),"[T:%.1f H:%.0i] DS1820:[%.1f/%.1f/%.1f/%.1f] LUX:[%.0f/%.0f] AL:[%i] DRZWI:[%i/%i] TACHO:[%i/%i obr/min]",
+   snprintf(Text,sizeof(Text),"[T:%.1f H:%.0i] DS1820:[%.1f/%.1f/%.1f/%.1f] LUX:[%.0f/%.0f] AL:[%i] DRZWI:[%i] GRZ:[%i] PK:[%i/%i/%i/%i] TACHO:[%i/%i obr/min]",
             TempDHT_ptr1->temp,                 // DHT1 temeratura 1
             TempDHT_ptr1->hum,                  // DHT1 wilgotność
             Temp_DS_ptr1->temp[0],Temp_DS_ptr1->temp[1],Temp_DS_ptr1->temp[2],Temp_DS_ptr1->temp[3],
             BH1750_ptr1->lux[0],BH1750_ptr1->lux[1],
             Alarm_ptr1->Alarm,
-            (int)KomponentSTATE.drzwi[0],
-            (int)KomponentSTATE.drzwi[1],
+            (int)KomponentSTATE.drzwi,
+            (int)KomponentSTATE.grzalka,
+            (int)KomponentSTATE.pk[0],
+            (int)KomponentSTATE.pk[1],
+            (int)KomponentSTATE.pk[2],
+            (int)KomponentSTATE.pk[3],
             KomponentSTATE.Tacho[0],
             KomponentSTATE.Tacho[1]
             
@@ -224,11 +256,16 @@ void SerwisMonitor(void)
     JSON_doc["TEMP"] = TempDHT_ptr1->temp;
     JSON_doc["HUMIDITY"] = TempDHT_ptr1->hum;
     for(int i=0;i<4;i++) JSON_doc["DS1820"][i] =Temp_DS_ptr1->temp[i];
+    JSON_doc["LED_POW"][0] = KomponentSTATE.pk[1];  // status zasilania na matrycę LED 1
+    JSON_doc["LED_POW"][1] = KomponentSTATE.pk[2];  // status zasilania na matrycę LED 2
+
+    //for(int i=0;i<4;i++) JSON_doc["PK"][i] =KomponentSTATE.pk[i];
     JSON_doc["LUX"][0] = (int)BH1750_ptr1->lux[0];
     JSON_doc["LUX"][1] = (int)BH1750_ptr1->lux[1];
-    JSON_doc["DOOR"][0] = KomponentSTATE.drzwi[0];
-    JSON_doc["DOOR"][1] = KomponentSTATE.drzwi[1];
+    JSON_doc["DOOR"] = KomponentSTATE.drzwi;
+    JSON_doc["HEAT"] = KomponentSTATE.grzalka;
     JSON_doc["SHOCK"] = Alarm_ptr1->Alarm;
+
     JSON_doc["TACHO"][0] = KomponentSTATE.Tacho[0];
     JSON_doc["TACHO"][1] = KomponentSTATE.Tacho[1];
     

@@ -24,6 +24,7 @@ void displayRange(void);
 void task1(void *parameters)
 {
    uint8_t regr;
+   int stan;
 
    // Inicjalizacja ADXL345
   Serial.println("Inicjalizacja ADXL345:  ");
@@ -58,8 +59,17 @@ void task1(void *parameters)
   {
      if (Alarm.connect) 
       {regr=accel->readRegister(0x30);
-       if(regr==0xC3||regr==0xE3)  Alarm.Alarm=true;
-       else Alarm.Alarm=false; 
+       if(regr==0xC3||regr==0xE3) { Alarm.Alarm=true; stan=5;}
+       else 
+       {
+        stan--;
+        if(stan<=0) // pamietaj stan i resetuj dopiero po 5 iteracjach ustalamy zwłokę 5*CYKL_TASK1
+        {
+         Alarm.Alarm=false; 
+         stan =0;
+        }
+       
+       } 
       } 
 
       //Serial.print("task1  Core: ");  Serial.println(xPortGetCoreID());

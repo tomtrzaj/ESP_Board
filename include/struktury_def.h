@@ -50,8 +50,9 @@ struct ALARM
 struct STANY_KOMPONENTOW
 {
   bool fan_zas;      // czy załaczony wentylator
-  bool pk[4];          // stan przekaźników
-  bool drzwi[2];        //  stan drzwi 
+  bool pk[4];        // stan przekaźników
+  bool drzwi;        //  stan drzwi 
+  bool grzalka;
   bool przyciski[4];
   bool PrzyciskiLED[4];
   int  Tacho[2];      // obroty Tahometrów w wentylatorach 

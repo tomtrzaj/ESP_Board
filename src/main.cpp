@@ -29,8 +29,8 @@ void IRAM_ATTR onTimer1()
 
 void setup() 
 {
-   Serial.begin(921600);
-   //Serial.begin(115200);
+   //Serial.begin(921600);
+   Serial.begin(115200);
    Serial.println("Hello ESPDev Board v1.0");
 
   //msg_queue = xQueueCreate(msg_queue_len, sizeof(int)); // stworzyliśmy kolejkę
@@ -44,7 +44,6 @@ void setup()
   xTaskCreatePinnedToCore(task2,"TASK2",10000,NULL,4,&Task2,0); //Task on Core 0      DHT22
   xTaskCreatePinnedToCore(task3,"TASK3",10000,NULL,3,&Task3,0); //Task on Core 0   - czujniki temperatur DS1820
   xTaskCreatePinnedToCore(task4,"TASK4",10000,NULL,1,&Task4,0); //Task on Core 0  // BH1750
-  //xTaskCreate(task4,"TASK 4", 2000,NULL,3,NULL);                                       // 
   
 
   akcja.attach(0,250,zadanie0);            // zadania na core1
@@ -53,17 +52,17 @@ void setup()
   akcja.attach(3,0,zadanie3);         
  //----------------
   //pinMode(TOUCH4_pin, INPUT_PULLUP); pinMode(TOUCH3_pin, INPUT_PULLUP); pinMode(TOUCH2_pin, INPUT_PULLUP); pinMode(TOUCH1_pin, INPUT_PULLUP);
-  
+ 
   pinMode(LED1_pin, OUTPUT); pinMode(LED2_pin, OUTPUT); pinMode(LED3_pin, OUTPUT); pinMode(LED4_pin, OUTPUT);
   pinMode(KOMP_pin, OUTPUT);
   pinMode(PK1_pin, OUTPUT); pinMode(PK2_pin, OUTPUT);pinMode(PK3_pin, OUTPUT);pinMode(PK4_pin, OUTPUT);
   pinMode(DOOR1_pin, INPUT_PULLUP); pinMode(DOOR2_pin, INPUT_PULLUP); 
   pinMode(PWN_FAN1_pin, OUTPUT);  pinMode(PWN_FAN2_pin, OUTPUT);
-  digitalWrite(PWN_FAN1_pin,HIGH);  digitalWrite(PWN_FAN2_pin,HIGH);
+  //digitalWrite(PWN_FAN1_pin,HIGH);  digitalWrite(PWN_FAN2_pin,HIGH);
   pinMode(TACHO1_pin, INPUT_PULLUP); pinMode(TACHO2_pin, INPUT_PULLUP);
   //analogWriteFrequency(25000);
   analogWrite(PWN_FAN1_pin,255);  analogWrite(PWN_FAN2_pin,255);
- 
+    
  // Initialize SPIFFS
   if(!SPIFFS.begin()){
     Serial.println("An Error has occurred while mounting SPIFFS");
@@ -124,8 +123,8 @@ void zadanie0()
     if(KomponentSTATE.pk[2]) {digitalWrite(PK3_pin,HIGH);} else {digitalWrite(PK3_pin,LOW);} // WY Przekaźnika 3
     if(KomponentSTATE.pk[3]) {digitalWrite(PK4_pin,HIGH);} else {digitalWrite(PK4_pin,LOW);} // WY Przekaźnika 4
     
-    if(digitalRead(DOOR1_pin)) KomponentSTATE.drzwi[0]=false; else KomponentSTATE.drzwi[0]=true;
-    if(digitalRead(DOOR2_pin)) KomponentSTATE.drzwi[1]=false; else KomponentSTATE.drzwi[1]=true;
+    if(digitalRead(DOOR1_pin)) KomponentSTATE.drzwi=false; else KomponentSTATE.drzwi=true;
+    if(digitalRead(DOOR2_pin)) KomponentSTATE.grzalka=false; else KomponentSTATE.grzalka=true;
 
     if(KomponentSTATE.fan_zas) {digitalWrite(KOMP_pin,HIGH);} else {digitalWrite(KOMP_pin,LOW);}  // załączenie zasilania pod wentylatory
 
