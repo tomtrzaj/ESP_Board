@@ -101,8 +101,7 @@ void loop()
    //Serial.print("  Free heap  Memory: "); Serial.println(xPortGetFreeHeapSize());
 
 
-   //delay(1000);
-  // put your main code here, to run repeatedly:
+  
  
 }
 //#######################################################################
