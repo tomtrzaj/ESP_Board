@@ -10,12 +10,35 @@
 </head>
 <body>
   <h1>ESP32 Web Server</h1>
-  <p>ALARM state: <strong> %STATE%</strong></p>
-  <p>DHT Temp: <strong> %DHT_TEMP% / %HUM%  </strong></p>
-  <p>DS1 Temp: <strong> %DS1_TEMP%</strong></p>
-  <p>DS1 Temp: <strong> %DS2_TEMP%</strong></p>
-  <p>Światło: <strong> %LUX1%</strong> [lux]</p>
-  <p><a href="/on"><button class="button">ON</button></a></p>
-  <p><a href="/off"><button class="button button2">OFF</button></a></p>
+  <hr>
+  <p>STAN PRACY: <strong> %STATE%</strong></p>
+  <hr>
+  <p style="text-align: left">TEMPETATURY:
+    <ul style="text-align: left">
+      <li> DTH22 temp:<strong> %DHT_TEMP%  wilgo:  %HUM%  </strong></li>
+      <li> DS1820 temp:  %DS1% / %DS2% / %DS3% / %DS1% [&#176C]</li>
+    </ul>
+    <hr>
+  </p>
+  <p style="text-align: left">POZIOM ŚWIATŁA:
+    <ul style="text-align: left">
+      <li> Strona przednia:..<strong>  %LUX1% </strong> [lux]</li>
+      <li> Strona tylnia:......<strong>  %LUX2% </strong> [lux]</li>
+    </ul>
+    <hr>
+  </p>
+  <p style="text-align: left">WENTYLATORY (0 - 6400):
+    <ul style="text-align: left">
+      <li> Wentylator wew.:<strong>  %FAN1% </strong>   [obr/m]</li>
+      <li> Wentylator zewn.:<strong> %Fan2% </strong>   [obr/m]</li>
+    </ul>
+    <hr>
+  </p>
+  
+  <p><a href="/on"><button class="button">ON</button></a>
+     <a href="/off"><button class="button button2">OFF</button></a>
+  </p>
+ 
+
 </body>
 </html>

@@ -91,13 +91,13 @@ void ServisSerialEvent()
                     {
                       switch (serial_buf[2])
                       {
-                       case '1': if(KomponentSTATE.pk[0]) {KomponentSTATE.pk[0]=false;  Serial.println("PK1 - OFF");}
+                       case '1': if(KomponentSTATE.pk[0]) {KomponentSTATE.pk[0]=false; Serial.println("PK1 - OFF");}
                                  else                     {KomponentSTATE.pk[0]=true;  Serial.println("PK1 - ON");} break;
-                       case '2': if(KomponentSTATE.pk[1]) {KomponentSTATE.pk[1]=false;  Serial.println("PK2 - OFF");}
+                       case '2': if(KomponentSTATE.pk[1]) {KomponentSTATE.pk[1]=false; Serial.println("PK2 - OFF");}
                                  else                     {KomponentSTATE.pk[1]=true;  Serial.println("PK2 - ON");} break;
                        case '3': if(KomponentSTATE.pk[2]) {KomponentSTATE.pk[2]=false; Serial.println("PK3 - OFF");}
-                                 else                     {KomponentSTATE.pk[2]=true; Serial.println("PK3 - ON");} break;
-                       case '4': if(KomponentSTATE.pk[3]) {KomponentSTATE.pk[3]=false;  Serial.println("PK4 - OFF");}
+                                 else                     {KomponentSTATE.pk[2]=true;  Serial.println("PK3 - ON");} break;
+                       case '4': if(KomponentSTATE.pk[3]) {KomponentSTATE.pk[3]=false; Serial.println("PK4 - OFF");}
                                  else                     {KomponentSTATE.pk[3]=true;  Serial.println("PK4 - ON");} break;
                        default: Serial.print("nieznana komenda!!!");break;
                       } 
@@ -159,8 +159,8 @@ void ServisSerialEvent()
         {
         case 'A':
           break;
-        case 'a':   break;
-        case 'b':    break;
+        case 'a':    Serial.print("komp ON");  digitalWrite(PWN_5V_pin,HIGH); break;
+        case 'b':    Serial.print("komp OFF"); digitalWrite(PWN_5V_pin,LOW);  break;
         case 'c':    break;
         case 'd':    break;
         case 'f':  

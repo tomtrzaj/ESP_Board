@@ -15,7 +15,7 @@
 
 #define PWN_FAN1_pin 2
 #define PWN_FAN2_pin 4
-#define PWN_5V_pin 6
+#define PWN_5V_pin 15
 
 #define TACHO1_pin 34
 #define TACHO2_pin 35

@@ -35,7 +35,6 @@ void setup()
 
   //msg_queue = xQueueCreate(msg_queue_len, sizeof(int)); // stworzyliśmy kolejkę
 
-  
 
 
 
@@ -54,11 +53,11 @@ void setup()
   //pinMode(TOUCH4_pin, INPUT_PULLUP); pinMode(TOUCH3_pin, INPUT_PULLUP); pinMode(TOUCH2_pin, INPUT_PULLUP); pinMode(TOUCH1_pin, INPUT_PULLUP);
  
   pinMode(LED1_pin, OUTPUT); pinMode(LED2_pin, OUTPUT); pinMode(LED3_pin, OUTPUT); pinMode(LED4_pin, OUTPUT);
-  pinMode(KOMP_pin, OUTPUT);
+  pinMode(KOMP_pin, OUTPUT);   
+  pinMode(PWN_5V_pin, OUTPUT); digitalWrite(PWN_5V_pin,LOW);
   pinMode(PK1_pin, OUTPUT); pinMode(PK2_pin, OUTPUT);pinMode(PK3_pin, OUTPUT);pinMode(PK4_pin, OUTPUT);
   pinMode(DOOR1_pin, INPUT_PULLUP); pinMode(DOOR2_pin, INPUT_PULLUP); 
   pinMode(PWN_FAN1_pin, OUTPUT);  pinMode(PWN_FAN2_pin, OUTPUT);
-  //digitalWrite(PWN_FAN1_pin,HIGH);  digitalWrite(PWN_FAN2_pin,HIGH);
   pinMode(TACHO1_pin, INPUT_PULLUP); pinMode(TACHO2_pin, INPUT_PULLUP);
   //analogWriteFrequency(25000);
   analogWrite(PWN_FAN1_pin,255);  analogWrite(PWN_FAN2_pin,255);
@@ -80,7 +79,7 @@ void setup()
     timerAttachInterrupt(My_timer1, &onTimer1, true);
     timerAlarmWrite(My_timer1, 1000000, true);
     attachInterrupt(TACHO1_pin, zliczTacho1, FALLING); attachInterrupt(TACHO2_pin, zliczTacho2, FALLING);  // zliczanie impulsów od tacho
-    timerAlarmEnable(My_timer1); // timer do zliczania impulsów w ciągu minuty
+    timerAlarmEnable(My_timer1);       // timer do zliczania impulsów w ciągu minuty
 
 
 

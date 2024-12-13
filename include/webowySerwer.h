@@ -31,39 +31,17 @@ String processor(const String& var)   // Replaces placeholder with LED state val
 {
   //Serial.println(var);
   //char buff[10];
-  if(var == "STATE")
-  {
-    if(Alarm_ptr2->Alarm){wynik = "ON";}
-    else{wynik = "OFF";}
-    //Serial.print(wynik);
-    return wynik;
-  }
-  if(var == "DHT_TEMP")
-   {
-    wynik = String(TempDHT_ptr2->temp);
-    return wynik;
-   }
-  if(var == "HUM")
-   {
-    wynik = String(TempDHT_ptr2->hum);
-    return wynik;
-   } 
-  if(var == "DS1_TEMP")
-   {
-    wynik = String(Temp_DS_ptr2->temp[0]);
-    return wynik;
-   }
-  if(var == "DS2_TEMP")
-   {
-    wynik = String(Temp_DS_ptr2->temp[1]);
-    return wynik;
-   } 
-  if(var == "LUX1")
-   {
-    wynik = String(BH1750_ptr2->lux[0]);
-    return wynik;
-   }
-
+  if(var == "STATE")   {if(Alarm_ptr2->Alarm) {wynik = "ON";}    else{wynik = "OFF";}   return wynik;}
+  if(var == "DHT_TEMP"){ wynik = String(TempDHT_ptr2->temp);    return wynik;}
+  if(var == "HUM")     { wynik = String(TempDHT_ptr2->hum);     return wynik;} 
+  if(var == "DS1"){ wynik = String(Temp_DS_ptr2->temp[0]); return wynik;}
+  if(var == "DS2"){ wynik = String(Temp_DS_ptr2->temp[1]); return wynik;} 
+  if(var == "DS3"){ wynik = String(Temp_DS_ptr2->temp[2]); return wynik;}
+  if(var == "DS4"){ wynik = String(Temp_DS_ptr2->temp[3]); return wynik;} 
+  if(var == "LUX1")    { wynik = String(BH1750_ptr2->lux[0]);   return wynik;}
+  if(var == "LUX1")    { wynik = String(BH1750_ptr2->lux[2]);   return wynik;}
+  if(var == "FAN1")    { wynik = String(KomponentSTATE.Tacho[0]);   return wynik;}
+  if(var == "FAN2")    { wynik = String(KomponentSTATE.Tacho[1]);   return wynik;}
 
   return String();
 }
@@ -98,6 +76,7 @@ void webConnect(void)
     request->send(SPIFFS, "/style.css", "text/css");
   });
 
+//------------------------------------
   // Route to set GPIO to HIGH
   server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request){
     //digitalWrite(ledPin, HIGH);    
