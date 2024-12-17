@@ -19,6 +19,7 @@ void IRAM_ATTR zliczTacho2() { licznikTacho2++; }
 // zlicza co 1s obroty wentylatorów TACHO
 void IRAM_ATTR onTimer1()
 {
+  StaneTime++;   // zliczamy czas trwania STANu w [s] 
   KomponentSTATE.Tacho[0]=licznikTacho1*30;  // Tacho dają po dwa impulsy na [s] czyli /2  mnożymy *60  co w sumie daje *30  
   licznikTacho1=0;
   KomponentSTATE.Tacho[1]=licznikTacho2*30;  // Tacho dają po dwa impulsy na [s] czyli /2  mnożymy *60  co w sumie daje *30  
@@ -36,8 +37,6 @@ void setup()
   //msg_queue = xQueueCreate(msg_queue_len, sizeof(int)); // stworzyliśmy kolejkę
 
 
-
-
   //xTaskCreate(task1,"TASK 1", 2000,NULL,1,&Task1); // on core 0
   xTaskCreatePinnedToCore(task1,"TASK1",2000,NULL,1,&Task1,0); //Task on Core 0      accelerometr ADXL
   xTaskCreatePinnedToCore(task2,"TASK2",10000,NULL,4,&Task2,0); //Task on Core 0      DHT22
@@ -47,7 +46,7 @@ void setup()
 
   akcja.attach(0,250,zadanie0);            // zadania na core1
   akcja.attach(1,3000,zadanie1);         
-  akcja.attach(2,0,zadanie2);          
+  akcja.attach(2,0,zadanie2);              
   akcja.attach(3,0,zadanie3);         
  //----------------
   //pinMode(TOUCH4_pin, INPUT_PULLUP); pinMode(TOUCH3_pin, INPUT_PULLUP); pinMode(TOUCH2_pin, INPUT_PULLUP); pinMode(TOUCH1_pin, INPUT_PULLUP);
@@ -67,25 +66,24 @@ void setup()
     Serial.println("An Error has occurred while mounting SPIFFS");
     return;
   }
+
+
   
   //webConnect();
-  delay(1000);
+  //delay(1000);
   //TouchNormalTreshold[0]=touchRead(TOUCH1_pin); TouchNormalTreshold[1]=touchRead(TOUCH2_pin);TouchNormalTreshold[2]=touchRead(TOUCH3_pin);TouchNormalTreshold[3]=touchRead(TOUCH4_pin);
   // Serial.print("Touch reference Level:  "); Serial.print( TouchNormalTreshold[0]);  Serial.print(" / "); Serial.print(TouchNormalTreshold[1]); Serial.print(" / ");
   // Serial.print( TouchNormalTreshold[2]);  Serial.print(" / "); Serial.println(TouchNormalTreshold[3]);
   
   // do TACHO uruchamiamy precyzyjny TIMER
-    My_timer1 = timerBegin(0, 80, true); // co sekunde
+    My_timer1 = timerBegin(0, 80, true); // przerwanie co sekunde
     timerAttachInterrupt(My_timer1, &onTimer1, true);
     timerAlarmWrite(My_timer1, 1000000, true);
     attachInterrupt(TACHO1_pin, zliczTacho1, FALLING); attachInterrupt(TACHO2_pin, zliczTacho2, FALLING);  // zliczanie impulsów od tacho
     timerAlarmEnable(My_timer1);       // timer do zliczania impulsów w ciągu minuty
 
 
-
-
 }
-
 
 //################################################################
 //##############   LOOP   #######################################
@@ -98,9 +96,71 @@ void loop()
    //Serial.print("Loop  Core: ");  Serial.println(xPortGetCoreID());
    //Serial.print("Remaining Stack Memory: "); Serial.print(uxTaskGetStackHighWaterMark(NULL));
    //Serial.print("  Free heap  Memory: "); Serial.println(xPortGetFreeHeapSize());
+ // -----STANY PRACY  TABLICY --------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------
+   switch(STAN_PRACY)  
+    { //------ Stan po załączeniu tablicy ---------------------------------------------
+      case START: 
+          switch (StaneTime)
+           {
+            case 1: {ilosc_wykonan=1;break;}
+            case 2: {if(ilosc_wykonan>0) {/* TO DO*/ ilosc_wykonan--;} break;} // po 2s
+            case 3: {ilosc_wykonan=2; break;}
+            case 6: {if(ilosc_wykonan>0) {/* TO DO*/ ilosc_wykonan--;} break;}
+            case 10: { /* TO DO*/ STAN_PRACY=DOGRZEWANIE; StaneTime=0; break;}  // przejście do innego stanu
+            default: break;
+           }  
+          break;
+      case DOGRZEWANIE: 
+          switch (StaneTime)
+           {
+            case 1: {ilosc_wykonan=1;break;}
+            case 2: { if(ilosc_wykonan>0) {/* TO DO*/  ilosc_wykonan--;} break;}
+            case 3: {ilosc_wykonan=3;break;}
+            case 6: { if(ilosc_wykonan>0) {/* TO DO*/  ilosc_wykonan--;} break;}
+            case 10: {/* TO DO*/  STAN_PRACY=PRACA;StaneTime=0; break;}
+            default: break;
+           }  
+          break;       
+                     
 
+      case PRACA: 
+         switch (StaneTime)
+           {
+            case 1: {ilosc_wykonan=1;break;}
+            case 2: { if(ilosc_wykonan>0) {/* TO DO*/  ilosc_wykonan--;} break;}
+            case 3: {ilosc_wykonan=4;break;}
+            case 6: { if(ilosc_wykonan>0) {/* TO DO*/  ilosc_wykonan--;} break;}
+            case 10: { /* TO DO*/  STAN_PRACY=WYLACZANIE;StaneTime=0; break;}
+            default: break;
+           }  
+          break;       
+      case WYLACZANIE: 
+          switch (StaneTime)
+           {
+            case 1: {ilosc_wykonan=1;break;}
+            case 2: { if(ilosc_wykonan>0) {/* TO DO*/  ilosc_wykonan--;} break;}
+            case 3: {ilosc_wykonan=5;break;}
+            case 6: { if(ilosc_wykonan>0) {/* TO DO*/  ilosc_wykonan--;} break;}
+            case 10: { /* TO DO*/  STAN_PRACY=AWARIA;StaneTime=0; break;}
+            default: break;
+           }  
+          break;       
+      
+      case AWARIA: 
+          switch (StaneTime)
+           {
+            case 1: {ilosc_wykonan=1;break;}
+            case 2: { if(ilosc_wykonan>0) {/* TO DO*/  ilosc_wykonan--;} break;}
+            case 3: {ilosc_wykonan=6;break;}
+            case 6: { if(ilosc_wykonan>0) {/* TO DO*/   ilosc_wykonan--;} break;}
+            case 10: { /* TO DO*/  STAN_PRACY=START;StaneTime=0; break;}
+            default: break;
+           }  
+          break;       
+      default: break;
+    }
 
-  
  
 }
 //#######################################################################

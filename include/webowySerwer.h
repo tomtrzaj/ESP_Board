@@ -39,7 +39,7 @@ String processor(const String& var)   // Replaces placeholder with LED state val
   if(var == "DS3"){ wynik = String(Temp_DS_ptr2->temp[2]); return wynik;}
   if(var == "DS4"){ wynik = String(Temp_DS_ptr2->temp[3]); return wynik;} 
   if(var == "LUX1")    { wynik = String(BH1750_ptr2->lux[0]);   return wynik;}
-  if(var == "LUX1")    { wynik = String(BH1750_ptr2->lux[2]);   return wynik;}
+  if(var == "LUX2")    { wynik = String(BH1750_ptr2->lux[1]);   return wynik;}
   if(var == "FAN1")    { wynik = String(KomponentSTATE.Tacho[0]);   return wynik;}
   if(var == "FAN2")    { wynik = String(KomponentSTATE.Tacho[1]);   return wynik;}
 
@@ -62,12 +62,9 @@ void webConnect(void)
   Serial.println(getIP);
 
 
-
-
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
   {
-   
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });
   
@@ -76,19 +73,42 @@ void webConnect(void)
     request->send(SPIFFS, "/style.css", "text/css");
   });
 
-//------------------------------------
+  // Route to load icon file--------
+  server.on("/temp_icon.png", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/temp_icon.png", "image/jpeg");
+  });
+   //------------------------------------
+  server.on("/lux_icon.png", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/lux_icon.png", "image/jpeg");
+  });
+   //--------------------------------------
+  server.on("/fan_icon.png", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/fan_icon.png", "image/jpeg");
+  });
+   //------------------------------------
+
+
   // Route to set GPIO to HIGH
-  server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request){
+  server.on("/PK1", HTTP_GET, [](AsyncWebServerRequest *request){
     //digitalWrite(ledPin, HIGH);    
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });
-  
-  // Route to set GPIO to LOW
-  server.on("/off", HTTP_GET, [](AsyncWebServerRequest *request){
+  //----------
+  server.on("/PK2", HTTP_GET, [](AsyncWebServerRequest *request){
     //digitalWrite(ledPin, LOW);    
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });
-
+  //-------
+  server.on("/PK3", HTTP_GET, [](AsyncWebServerRequest *request){
+    //digitalWrite(ledPin, LOW);    
+    request->send(SPIFFS, "/index.html", String(), false, processor);
+  });
+  //-------------
+  server.on("/PK4", HTTP_GET, [](AsyncWebServerRequest *request){
+    //digitalWrite(ledPin, LOW);    
+    request->send(SPIFFS, "/index.html", String(), false, processor);
+  });
+  //--------------------------- 
 
   server.begin();  Serial.println("Web Serwer Started");
   //server.close();

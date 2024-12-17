@@ -8,6 +8,12 @@ byte PWN_Fan1=0;
 byte PWN_Fan2=0;
 bool PodgladSerwisowy;
 
+// stany pracy maszyny //
+char stany_string[10][16]= {{"START"},{"DOGRZEWANIE"},{"PRACA"},{"WYLACZANIE"},{"AWARIA"},{"AWARIA"}};
+enum STAN_MASZYNY {START,DOGRZEWANIE,PRACA,WYLACZANIE,AWARIA,SERWIS};   // stany maszyny
+STAN_MASZYNY STAN_PRACY=START;
+
+
 /// @brief definicje structur uzytych w oprogramowaniu
 
 struct TEMP_DHT
@@ -22,7 +28,7 @@ struct TEMP_DHT
 //-------------------------------------------------
 struct TEMP_DS1820
 {
-  byte  connect;        // czy podłaczony
+  byte  connect;                    // czy podłaczony
   byte  amount_of_ds1820;             // ilość aktywnych czujników na linii
   byte  ilosc;                     // ilosc znalezionych DS1820 - max 4
   float temp[4];                   // temperatura w stC  czujnika z czujników(z dokładnąścią do 0,1 stopnia) zakres od -40 do +125

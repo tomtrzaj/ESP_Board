@@ -7,6 +7,7 @@
 #include <WiFi.h>
 #include "webowySerwer.h"
 //#include "ESPAsyncWebServer.h"
+//#include <FS.h>
 #include <SPIFFS.h>
 
 #include <struktury_def.h>
@@ -16,11 +17,10 @@
 #include "task4.h"
 
 
+int ilosc_wykonan=0;
 
 
-
-#define SERIAL_BUF_MAX_LENGTH 30 // max rozmiar bufora odbiornika serwisowego
-
+ long StaneTime=0;   // szas trwania stanu maszyny w [s]
 
 //int serial_buf_length;
 //char serial_buf[SERIAL_BUF_MAX_LENGTH-1];

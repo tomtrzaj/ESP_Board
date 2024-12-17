@@ -11,7 +11,8 @@
 
 
 
-#define SERIAL_BUF_MAX_LENGTH 30 // max rozmiar bufora odbiornika serwisowego
+#define SERIAL_BUF_MAX_LENGTH 600 // max rozmiar bufora odbiornika serwisowego
+#define SERIAL_BUF_CRITICAL_LENGTH 400  //  krytyczny rozmiar po którym czyścimy dane serial_buf_length=0;
 
 int serial_buf_length;
 char serial_buf[SERIAL_BUF_MAX_LENGTH-1];
@@ -34,7 +35,7 @@ void SerwisMonitor(void);
 //-------------------------------------------------------------------
 void ServisSerialEvent()
 {
-  
+  if (serial_buf_length>SERIAL_BUF_CRITICAL_LENGTH)  serial_buf_length=0;  // czyscimy jeśli coś nam zaśmieciło // zebezpieczenie przed crytycznym resetem urzadzenia
   while (Serial.available())
   {
     
@@ -232,7 +233,7 @@ void SerwisMonitor(void)
   {
    char Text[200];
  
-   snprintf(Text,sizeof(Text),"[T:%.1f H:%.0i] DS1820:[%.1f/%.1f/%.1f/%.1f] LUX:[%.0f/%.0f] AL:[%i] DRZWI:[%i] GRZ:[%i] PK:[%i/%i/%i/%i] TACHO:[%i/%i obr/min]",
+   snprintf(Text,sizeof(Text)," [T:%.1f H:%.0i] DS1820:[%.1f/%.1f/%.1f/%.1f] LUX:[%.0f/%.0f] AL:[%i] DRZWI:[%i] GRZ:[%i] PK:[%i/%i/%i/%i] TACHO:[%i/%i obr/min]",
             TempDHT_ptr1->temp,                 // DHT1 temeratura 1
             TempDHT_ptr1->hum,                  // DHT1 wilgotność
             Temp_DS_ptr1->temp[0],Temp_DS_ptr1->temp[1],Temp_DS_ptr1->temp[2],Temp_DS_ptr1->temp[3],
@@ -248,11 +249,12 @@ void SerwisMonitor(void)
             KomponentSTATE.Tacho[1]
             
             );
-
+   Serial.print(stany_string[STAN_PRACY]);
    Serial.println(Text);
   }
   else   // przesyłamy w JONSON
   {
+    JSON_doc["STAN"] = stany_string[STAN_PRACY];
     JSON_doc["TEMP"] = TempDHT_ptr1->temp;
     JSON_doc["HUMIDITY"] = TempDHT_ptr1->hum;
     for(int i=0;i<4;i++) JSON_doc["DS1820"][i] =Temp_DS_ptr1->temp[i];

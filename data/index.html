@@ -1,42 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ESP32 Web Server</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="4">
+  <title>ESP32_Board</title>
+  <!<meta http-equiv="refresh" content="4">
   <meta charset="UTF-8">
-  <link rel="icon" href="data:,">
   <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-  <h1>ESP32 Web Server</h1>
+  <header>
+    <h1>ESP32 Board</h1>
+    
+  </header>
+  
   <hr>
   <p>STAN PRACY: <strong> %STATE%</strong></p>
   <hr>
-  <p style="text-align: left">TEMPETATURY:
-    <ul style="text-align: left">
-      <li> DTH22 temp:<strong> %DHT_TEMP%  wilgo:  %HUM%  </strong></li>
-      <li> DS1820 temp:  %DS1% / %DS2% / %DS3% / %DS1% [&#176C]</li>
+  <p> <img src="temp_icon.png" class="icon_style cirkle"/>
+     TEMPETATURA:
+    <ul>
+      <li style="margin-bottom: 10px;"> DTH22 <strong>temp: %DHT_TEMP% [&#176C] wilgotność:  %HUM% [&#37] </strong></li>
+      <li> DS1820 temp:  %DS1% / %DS2% / %DS3% / %DS4% [&#176C]</li>
     </ul>
     <hr>
   </p>
-  <p style="text-align: left">POZIOM ŚWIATŁA:
-    <ul style="text-align: left">
-      <li> Strona przednia:..<strong>  %LUX1% </strong> [lux]</li>
-      <li> Strona tylnia:......<strong>  %LUX2% </strong> [lux]</li>
+  <p> <img src="lux_icon.png" class="icon_style cirkle"/>
+     POZIOM ŚWIATTŁA:
+    <ul>
+      <li style="margin-bottom: 10px;"> Strona przednia:..<strong>  %LUX1% </strong> [lux]</li>
+      <li> Strona tylnia:.......<strong>  %LUX2% </strong> [lux]</li>
     </ul>
     <hr>
   </p>
-  <p style="text-align: left">WENTYLATORY (0 - 6400):
-    <ul style="text-align: left">
-      <li> Wentylator wew.:<strong>  %FAN1% </strong>   [obr/m]</li>
-      <li> Wentylator zewn.:<strong> %Fan2% </strong>   [obr/m]</li>
+  <p> <img src="fan_icon.png" class="icon_style cirkle"/>
+    WENTYLATORY (0 - 6400):
+    <ul>
+      <li style="margin-bottom: 10px;"> Wentylator wew..:<strong>  %FAN1% </strong>   [obr/m]</li>
+      <li> Wentylator zewn.:<strong> %FAN2% </strong>   [obr/m]</li>
     </ul>
     <hr>
   </p>
   
-  <p><a href="/on"><button class="button">ON</button></a>
-     <a href="/off"><button class="button button2">OFF</button></a>
+  <p>
+    <div>
+     <a href="/PK1"><button class="button">PK1</button></a>
+     <a href="/PK2"><button class="button">PK2</button></a>
+     <a href="/PK3"><button class="button">PK3</button></a>
+     <a href="/PK4"><button class="button">PK4</button></a>
+    </div>
   </p>
  
 
